@@ -1,27 +1,6 @@
-Sversion: '3.8'
+version: '3.8'
 
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - web
-    networks:
-      - bookstore-net
-
-  web:
-    build: .
-    container_name: bookstore_web
-    restart: always
-    depends_on:
-      - db
-    networks:
-      - bookstore-net
-
   db:
     image: postgres:15-alpine
     container_name: db
@@ -39,6 +18,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  web:
+    build: .
+    container_name: bookstore_web
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - bookstore-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+    networks:
+      - bookstore-net
 
   prometheus:
     image: prom/prometheus:latest
@@ -62,4 +62,3 @@ volumes:
 networks:
   bookstore-net:
     driver: bridge
-
